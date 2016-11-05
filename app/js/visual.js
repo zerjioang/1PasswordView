@@ -18,7 +18,7 @@ function profileContentsDidFinishLoading(json) {
     var allItems = null;
 
     try {
-        allItems = eval(json);
+        allItems = eval(obj);
     } catch (exc) {
         var error_desc = exc.name + " occurred when parsing contents.js on line #" + exc.line + ":" + exc.message;
         showFatalMessageWithEmailSupportLink("1PasswordAnywhere experienced an error", error_desc);
@@ -65,8 +65,6 @@ function renderSectionList() {
 }
 
 function renderSectionListItem(name, displayName, img) {
-
-
     var r = "<li " + sectionOptions(name) + ">";
     r += "<img  src='" + img + "' alt='' />" + displayName;
     r += sectionCount(name, displayName);
@@ -219,7 +217,8 @@ function entryDidFinishLoading(json) {
 
     var entry;
     try {
-        entry = JSON.parse(json);
+        //entry = JSON.parse(json);
+        entry = json;
     } catch (e) {
         alert('Error evaluating data for this entry! Error: ' + e);
     }
@@ -277,6 +276,7 @@ function showEntryDetails() {
     concealedFieldCount = 0;
 
     var decryption_status;
+
     try {
         decryption_status = selectedEntry.decrypt()
     } catch (e) {
@@ -350,10 +350,12 @@ function verifyPassword(password) {
             encryptionKeysCouldNotLoad();
             return;
         }
-
         if (keychain.verifyPassword(password)) {
             $("#mainBody").html($("#main-html").html());
-            loadFile(fullKeychainFilePath('contents.js'), profileContentsDidFinishLoading);
+            loadFile(
+                fullKeychainFilePath('contents.js'),
+                profileContentsDidFinishLoading
+            );
         } else {
             login_failed();
         }
@@ -383,7 +385,9 @@ function encryptionKeysDidFinishLoading(json) {
     try {
         var keys;
         try {
-            json = "(" + json + ")";
+            if(!mainVaultPath){
+                json = "(" + json + ")";
+            }
             keys = eval(json);
         } catch (e) {
             showFatalMessage("Problem parsing 1Password data file", "<p>There was a problem parsing the data contained in encryptionKeys.js.</p><p>Please <a href='mailto:1PAnywhere@agilebits.com?subject=1PasswordAnywhere%20problem%20parsing%20encryptionKeys.js&body=Please let us know what you were doing when this problem occurred.'>report this problem</a> to the Agile team.</p>")
@@ -414,7 +418,12 @@ function setup() {
 
 function _setup() {
     baseUrl = window.location.href.substring(0, window.location.href.indexOf("1Password.html"));
-    keychainFolder = baseUrl;
+    if(mainVaultPath){
+        keychainFolder = mainVaultPath;
+    }
+    else{
+        keychainFolder = baseUrl;
+    }
 
     var parameters = window.location.search.substring(1).split("&");
 
@@ -461,21 +470,43 @@ function setFocus() {
 }
 
 function fullKeychainFilePath(filename) {
-    return top.keychainFolder + "data/" + top.current_profile + "/" + filename;
+    if(mainVaultPath){
+        var profile = "default";
+        if(top.current_profile){
+            profile = top.current_profile;
+        }
+        return mainVaultPath + "data/" + profile + "/" + filename;
+    }
+    else{
+        return top.keychainFolder + "data/" + top.current_profile + "/" + filename;
+    }
+}
+
+function fileread(filename){
+    return fs.readFileSync(filename);
 }
 
 function loadFile(file, onSuccess) {
-    enableFirefoxPrivileges();
-
-    $.ajax({
-        url: file,
-        success: function(data, textStatus, request) {
-            onSuccess(request.responseText);
-        },
-        error: function() {
-            alert('A problem occurred when loading the "' + file + '" file.');
-        },
-    });
+    if(mainVaultPath){
+        //load file from local
+        var filePath = path.join(file);
+        var data = fileread(filePath);
+        obj = JSON.parse(data);
+        onSuccess(obj);
+    }
+    else{
+        alert('A problem occurred when loading the "' + file + '" file.');
+        /*$.ajax({
+            url: file,
+            success: function(data, textStatus, request) {
+                onSuccess(request.responseText);
+            },
+            error: function() {
+                alert('A problem occurred when loading the "' + file + '" file.');
+            },
+        });
+        */
+    }
 }
 
 function enableFirefoxPrivileges() {
@@ -492,6 +523,13 @@ function enableFirefoxPrivileges() {
 }
 
 function showFatalException(exc) {
+    if(exc){
+        alert("Exception: \r\n"+exc);
+    }
+    else{
+        alert("Unknown exception");
+    }
+    /*
     try {
         window.console && console.log && console.log("Exception: " + exc ? exc : "N/A");
 
@@ -518,6 +556,7 @@ function showFatalException(exc) {
         if (OPANYWHERE_VERSION) msg += ' You are running version #' + OPANYWHERE_VERSION;
         alert(msg);
     }
+    */
 }
 
 function showMessage(title, message) {

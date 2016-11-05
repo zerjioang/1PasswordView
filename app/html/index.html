@@ -35,6 +35,10 @@
 	<script type="text/javascript" src="../js/dropzone.js"></script>
 	<script>
 		Dropzone.autoDiscover = false;
+
+		var fs = require('fs');
+    	var files = fs.readdirSync('./../../demo-vault');
+    	alert(files); 
 	</script>
 
 </html>

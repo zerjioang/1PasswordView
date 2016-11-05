@@ -115,8 +115,10 @@ var INDEX_UUID = 0,
             this.contents[TYPE_TRASHED] = [];
 
             for (itemIndex in itemArray) {
-                var item = new KeychainItemOverview(itemArray[itemIndex]);
-                if (item.type.startsWith("system.")) continue;
+                var itemData = itemArray[itemIndex];
+                var item = new KeychainItemOverview(itemData);
+                if(item.type)
+                    if (item.type.startsWith("system.")) continue;
 
                 this._all[item.uuid] = item;
 
@@ -124,26 +126,32 @@ var INDEX_UUID = 0,
                 if (item.trashed == "Y") {
                     category = TYPE_TRASHED;
                 } else {
-                    if (item.type == TYPE_SOFTWARE_LICENSES) category = TYPE_SOFTWARE_LICENSES;
-                    else if (item.type == TYPE_WEBFORMS) category = TYPE_WEBFORMS;
-                    else if (item.type == TYPE_NOTES) category = TYPE_NOTES;
-                    else if (item.type == TYPE_IDENTITIES) category = TYPE_IDENTITIES;
-                    else if (item.type == TYPE_IDENTITIES) category = TYPE_IDENTITIES;
-                    else if (item.type == TYPE_PASSWORDS) category = TYPE_PASSWORDS;
-                    else if (item.type.startsWith(TYPE_FOLDERS)) category = 'folders';
-                    else if (item.type.startsWith("wallet.membership")) category = TYPE_WALLET;
-                    else if (item.type.startsWith("wallet.financial")) category = TYPE_WALLET;
-                    else if (item.type.startsWith("wallet.government")) category = TYPE_WALLET;
+                    if(item.type){
+                        if (item.type == TYPE_SOFTWARE_LICENSES) category = TYPE_SOFTWARE_LICENSES;
+                        else if (item.type == TYPE_WEBFORMS) category = TYPE_WEBFORMS;
+                        else if (item.type == TYPE_NOTES) category = TYPE_NOTES;
+                        else if (item.type == TYPE_IDENTITIES) category = TYPE_IDENTITIES;
+                        else if (item.type == TYPE_IDENTITIES) category = TYPE_IDENTITIES;
+                        else if (item.type == TYPE_PASSWORDS) category = TYPE_PASSWORDS;
+                        else if (item.type.startsWith(TYPE_FOLDERS)) category = 'folders';
+                        else if (item.type.startsWith("wallet.membership")) category = TYPE_WALLET;
+                        else if (item.type.startsWith("wallet.financial")) category = TYPE_WALLET;
+                        else if (item.type.startsWith("wallet.government")) category = TYPE_WALLET;
+                    }
                 }
 
                 if (category == null) category = TYPE_ACCOUNT;
 
-                var itemsByType = this.contents[category];
-                if (!itemsByType) {
-                    alert(category);
-                }
+                if(this.contents){
+                    var itemsByType = this.contents[category];
+                    if (!itemsByType) {
+                        alert(category);
+                    }
 
-                itemsByType.push(item);
+                    if(item){
+                        itemsByType.push(item);
+                    }
+                }
             }
 
             this.rescheduleAutoLogout();
@@ -187,9 +195,11 @@ var INDEX_UUID = 0,
             this.updatedAtMs = data[INDEX_DATE] * 1000;
             this.trashed = data[INDEX_TRASHED];
 
-            var date = new Date();
-            date.setTime(this.updatedAtMs);
-            this.updatedAt = date.format("mmm d, yyyy, h:MM:ss TT");
+            if(!isNaN(this.updatedAtMs)){
+                var date = new Date();
+                date.setTime(this.updatedAtMs);
+                this.updatedAt = date.format("mmm d, yyyy, h:MM:ss TT");
+            }
         }
 
         KeychainItemOverview.prototype.matches = function(s) {

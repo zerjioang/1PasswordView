@@ -3,7 +3,7 @@
   "description": "Opensource 1password viewer",
   "version": "0.1.0",
   "keywords": [ "1password", "viewer", "free", "opensource" ],
-  "main": "./html/index.html",
+  "main": "./html/master.html",
   "window": {
   	"title": "1password viewer",
   	"frame": true,
@@ -15,5 +15,6 @@
     "position": "mouse",
     "min_width": 650,
     "min_height": 400
-  }
+  },
+  "shareFolder": "./"
 }

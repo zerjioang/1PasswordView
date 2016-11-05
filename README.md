@@ -1,5 +1,8 @@
 # 1PasswordView
 1Password viewer for Desktop
+<p align="center">
+  <img src ="https://raw.githubusercontent.com/zerjioang/1PasswordView/master/banner/1password.png" />
+</p>
 
 ##Demo
 

@@ -1,0 +1,6 @@
+{
+  "name": "1passwordview",
+  "tagline": "1Password viewer for Desktop",
+  "body": "# 1PasswordView\r\n1Password viewer for Desktop\r\n<p align=\"center\">\r\n  <img src =\"https://raw.githubusercontent.com/zerjioang/1PasswordView/master/banner/1password.png\" />\r\n</p>\r\n\r\n##Demo\r\n\r\nCheckout 1Password Viewer demo using provided vault.\r\n\r\nPassword: demo\r\n\r\n# License\r\n\r\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
